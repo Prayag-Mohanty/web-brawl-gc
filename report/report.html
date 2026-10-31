@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>SplitSmart Report</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 12mm 13mm;
+      }
+      body {
+        font:
+          9.6pt/1.38 'Segoe UI',
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        color: #1f2937;
+        margin: 0;
+      }
+      h1 {
+        font-size: 19pt;
+        margin: 0;
+        color: #0f766e;
+      }
+      h2 {
+        font-size: 10.5pt;
+        margin: 8px 0 3px;
+        color: #0f766e;
+        border-bottom: 1px solid #d1d5db;
+        padding-bottom: 1px;
+      }
+      .sub {
+        color: #4b5563;
+        margin: 2px 0 6px;
+      }
+      a {
+        color: #0f766e;
+      }
+      ul {
+        margin: 2px 0;
+        padding-left: 15px;
+      }
+      li {
+        margin: 1px 0;
+      }
+      p {
+        margin: 3px 0;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+      }
+      .shots {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .shots img {
+        height: 150px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 9pt;
+      }
+      td {
+        border: 1px solid #e5e7eb;
+        padding: 2px 5px;
+        vertical-align: top;
+      }
+      b {
+        color: #111827;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SplitSmart</h1>
+    <div class="sub">
+      Scan a receipt, assign items, split fairly, settle with the fewest payments. Web Brawl GC 2026 entry.<br />
+      <b>Repository:</b> <a href="https://github.com/Prayag-Mohanty/split-smart">github.com/Prayag-Mohanty/split-smart</a> &nbsp;·&nbsp; <b>Live:</b>
+      <a href="https://prayag-mohanty.github.io/split-smart/">prayag-mohanty.github.io/split-smart</a>
+    </div>
+
+    <p>
+      A static, installable web app (React 18 + TypeScript + Vite) with no backend. Receipts are read on the device, and all groups, expenses and settlements
+      are stored in the browser. Receipt images are never uploaded or saved.
+    </p>
+
+    <div class="cols">
+      <div>
+        <h2>Tier 1: core (all done)</h2>
+        <ul>
+          <li>Groups and members with colour/emoji avatars; a dashboard with group totals.</li>
+          <li>Upload, drag-and-drop or live camera, with preview, rotate and retake.</li>
+          <li>Canvas preprocessing, then OCR with a staged progress bar; the UI stays responsive.</li>
+          <li>Parser for items, qty, price, total, CGST/SGST, service, discount, round-off; ignores GSTIN, phone numbers and footers.</li>
+          <li>Editable review table beside the image; words under 70% confidence highlighted yellow.</li>
+          <li>Total check showing the exact difference, with one-tap fixes; manual expenses; live balances.</li>
+        </ul>
+        <h2>Tier 2: advanced (all done)</h2>
+        <ul>
+          <li>Tap-avatar or drag-and-drop assignment; unassigned items block saving.</li>
+          <li>Equal, exact, percentage and share splits with validation.</li>
+          <li>Tax, charges and discounts shared in proportion to item subtotals.</li>
+          <li>Paisa-exact rounding, lazy zero-shot categories (overridable), localStorage persistence.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tier 3 and original features</h2>
+        <ul>
+          <li>UPI <code>upi://pay</code> links and QR codes; PDF/CSV export; JSON and share-link import.</li>
+          <li>Analytics by category, member and time; recurring expenses; batch scan.</li>
+          <li>PWA that works offline (OCR assets cached); accessible, with light and dark themes.</li>
+          <li>
+            <b>Original:</b> several payers per bill, an animated "debts shrink" graph, a WhatsApp bill card with QR, a simplify-debts toggle, expense search,
+            default splits, auto-rotation of sideways receipts, missing-GST-slab detection.
+          </li>
+        </ul>
+        <h2>Models (pretrained, as-is, client-side)</h2>
+        <ul>
+          <li><b>OCR:</b> Tesseract.js v5, English LSTM model, served from our own origin.</li>
+          <li><b>Categories:</b> Xenova/mobilebert-uncased-mnli via Transformers.js, in a Web Worker, loaded lazily. No alternative models used.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Algorithms</h2>
+    <table>
+      <tr>
+        <td style="width: 24%"><b>Money</b></td>
+        <td>All amounts are integer paise, so there is no floating-point drift. The logic sits in pure, UI-free modules in <code>src/lib/</code>.</td>
+      </tr>
+      <tr>
+        <td><b>Rounding rule</b></td>
+        <td>
+          Largest remainder: round every share down to the paisa, give leftover paise to the largest fractions, ties to the earlier member. ₹100 ÷ 3 = ₹33.34 /
+          ₹33.33 / ₹33.33.
+        </td>
+      </tr>
+      <tr>
+        <td><b>Proportional tax</b></td>
+        <td>Each tax/charge/discount line is shared by item subtotal: on ₹1,000 with ₹100 tax, ₹600 of items pays ₹60.</td>
+      </tr>
+      <tr>
+        <td><b>Debt simplification</b></td>
+        <td>
+          Exact minimum number of payments: bitmask DP finds the most zero-sum subgroups (n − k payments). Greedy is not always optimal and is checked against
+          brute force in tests.
+        </td>
+      </tr>
+    </table>
+
+    <h2>Quality</h2>
+    <p>
+      91 unit tests (splits, rounding, tax, settlement vs brute force, parser) and 10 Playwright end-to-end tests on a phone-sized browser with real OCR,
+      covering the ₹840 judging flow and the robustness cases. CI runs lint, formatting, tests and the build on every pull request, and deploys to GitHub Pages.
+      The first screen is about 70 KB of gzipped JS; OCR, the model, PDF and QR load only when needed.
+    </p>
+
+    <div class="shots">
+      <img src="../docs/screenshots/dashboard-mobile.png" /><img src="../docs/screenshots/review-desktop.png" /><img
+        src="../docs/screenshots/assign-mobile.png"
+      /><img src="../docs/screenshots/upi-mobile.png" />
+    </div>
+  </body>
+</html>
