@@ -10,7 +10,7 @@
       }
       body {
         font:
-          9.6pt/1.38 'Segoe UI',
+          9.3pt/1.35 'Segoe UI',
           Roboto,
           Helvetica,
           Arial,
@@ -33,6 +33,12 @@
       .sub {
         color: #4b5563;
         margin: 2px 0 6px;
+      }
+      .summary {
+        background: #f0fdfa;
+        border-left: 3px solid #0f766e;
+        padding: 5px 8px;
+        margin: 4px 0 5px;
       }
       a {
         color: #0f766e;
@@ -58,7 +64,7 @@
         margin-top: 6px;
       }
       .shots img {
-        height: 150px;
+        height: 104px;
         border: 1px solid #d1d5db;
         border-radius: 6px;
       }
@@ -80,15 +86,19 @@
   <body>
     <h1>SplitSmart</h1>
     <div class="sub">
-      Scan a receipt, assign items, split fairly, settle with the fewest payments. Web Brawl GC 2026 entry.<br />
+      Scan a receipt, assign items, split fairly, settle with the fewest payments. Web Brawl GC 2026 entry. React 18 + TypeScript static PWA, no backend;
+      receipt images never leave the device.<br />
       <b>Repository:</b> <a href="https://github.com/Prayag-Mohanty/split-smart">github.com/Prayag-Mohanty/split-smart</a> &nbsp;·&nbsp; <b>Live:</b>
       <a href="https://prayag-mohanty.github.io/split-smart/">prayag-mohanty.github.io/split-smart</a>
     </div>
 
-    <p>
-      A static, installable web app (React 18 + TypeScript + Vite) with no backend. Receipts are read on the device, and all groups, expenses and settlements
-      are stored in the browser. Receipt images are never uploaded or saved.
-    </p>
+    <div class="summary">
+      <b>Summary.</b> SplitSmart implements all three tiers, fully on-device and live on GitHub Pages. Beyond the brief: several payers per bill, a
+      WhatsApp-ready bill image with a UPI QR, drag-and-drop item assignment, an animated graph that collapses IOUs into the minimum payments (exact bitmask DP,
+      not greedy), a simplify-debts toggle, expense search, per-group default splits, auto-rotation of sideways receipts, and missing-GST-slab detection.
+      Models: Tesseract.js v5 (English LSTM, self-hosted) for OCR and Xenova/mobilebert-uncased-mnli via Transformers.js for categorisation, both used as-is in
+      Web Workers. No alternative models were used.
+    </div>
 
     <div class="cols">
       <div>
@@ -110,15 +120,11 @@
         </ul>
       </div>
       <div>
-        <h2>Tier 3 and original features</h2>
+        <h2>Tier 3 (all done)</h2>
         <ul>
           <li>UPI <code>upi://pay</code> links and QR codes; PDF/CSV export; JSON and share-link import.</li>
           <li>Analytics by category, member and time; recurring expenses; batch scan.</li>
           <li>PWA that works offline (OCR assets cached); accessible, with light and dark themes.</li>
-          <li>
-            <b>Original:</b> several payers per bill, an animated "debts shrink" graph, a WhatsApp bill card with QR, a simplify-debts toggle, expense search,
-            default splits, auto-rotation of sideways receipts, missing-GST-slab detection.
-          </li>
         </ul>
         <h2>Models (pretrained, as-is, client-side)</h2>
         <ul>
